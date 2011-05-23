@@ -4,4 +4,4 @@
     $ cd heylist
     $ bundle install
     $ cp config.example.yml config.yml
-    # fill in config.yml with values from the shared keychain
+    # fill in config.yml with credentials from the shared keychain
