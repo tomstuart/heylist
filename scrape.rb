@@ -23,11 +23,11 @@ end
 
 
 
-def attendees_for_event(url)
+def participants_for_event(url, kind)
   attendees = []
   agent = Mechanize.new
   agent.pluggable_parser.html = NokogiriParser
-  agent.get(url + "/attendees") do |page|
+  agent.get(url + "/" + kind) do |page|
     (page/"ul.people li span:not(.name)").each do |span|
       attendees << span.inner_text.strip[1..-1]
     end
@@ -35,15 +35,15 @@ def attendees_for_event(url)
   attendees
 end
 
-def ensure_list(name)
+def ensure_twitter_list(name)
   puts "Ensuring list %p exists" % name
   Twitter.list(name)
 rescue Twitter::NotFound
   Twitter.list_create(name)
 end
 
-def ensure_list_members(name, attendees)
-  puts "Ensuring #{attendees.length} attendees for list %p" % name
+def ensure_twitter_list_members(name, attendees)
+  puts "Ensuring #{attendees.length} members for list %p" % name
   Twitter.list_add_members(name, attendees)
 end
 
@@ -63,8 +63,15 @@ def list_name(name)
   name.downcase.gsub(" ", "-")
 end
 
-event_url = "http://lanyrd.com/2011/euruko"
+def ensure_list(event_url, type)
+  list = list_name(event_name(event_url))
+  ensure_twitter_list(list)
+  ensure_twitter_list_members(list, participants_for_event(event_url, type))
+end
 
-list = list_name(event_name(event_url))
-ensure_list(list)
-ensure_list_members(list, attendees_for_event(event_url))
+def process_event(url)
+  ensure_list(url, "attendees")
+  ensure_list(url, "speakers")
+end
+
+process_event "http://lanyrd.com/2011/euruko"
