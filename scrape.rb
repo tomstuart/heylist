@@ -27,7 +27,7 @@ def attendees_for_event(url)
   attendees = []
   agent = Mechanize.new
   agent.pluggable_parser.html = NokogiriParser
-  agent.get(url) do |page|
+  agent.get(url + "/attendees") do |page|
     (page/"ul.people li span:not(.name)").each do |span|
       attendees << span.inner_text.strip[1..-1]
     end
@@ -47,9 +47,24 @@ def ensure_list_members(name, attendees)
   Twitter.list_add_members(name, attendees)
 end
 
+def event_name(url)
+  name = nil
+  agent = Mechanize.new
+  agent.pluggable_parser.html = NokogiriParser
+  agent.get(url) do |page|
+    (page/"h1.summary").each do |h1|
+      name = h1.inner_text
+    end
+  end
+  name
+end
 
-event_attendees_url = "http://lanyrd.com/2011/euruko/attendees"
-event_name = "euruko-2011"
+def list_name(name)
+  name.downcase.gsub(" ", "-")
+end
 
-ensure_list(event_name)
-ensure_list_members(event_name, attendees_for_event(event_attendees_url))
+event_url = "http://lanyrd.com/2011/euruko"
+
+list = list_name(event_name(event_url))
+ensure_list(list)
+ensure_list_members(list, attendees_for_event(event_url))
