@@ -59,7 +59,8 @@ def event_name(url)
 end
 
 def list_name(name, type)
-  [name, type].map { |s| s.downcase.gsub(" ", "-") }.join("-")
+  type = nil if type == "attendees"
+  [name, type].compact.map { |s| s.downcase.gsub(" ", "-") }.join("-")
 end
 
 def ensure_list(event_url, type)
