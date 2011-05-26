@@ -22,7 +22,6 @@ Twitter.configure do |twitter|
 end
 
 
-
 def participants_for_event(url, kind)
   attendees = []
   agent = Mechanize.new
@@ -59,12 +58,12 @@ def event_name(url)
   name
 end
 
-def list_name(name)
-  name.downcase.gsub(" ", "-")
+def list_name(name, type)
+  [name, type].map { |s| s.downcase.gsub(" ", "-") }.join("-")
 end
 
 def ensure_list(event_url, type)
-  list = list_name(event_name(event_url))
+  list = list_name(event_name(event_url), type)
   ensure_twitter_list(list)
   ensure_twitter_list_members(list, participants_for_event(event_url, type))
 end
