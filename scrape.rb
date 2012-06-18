@@ -74,4 +74,4 @@ def process_event(url)
   ensure_list(url, "speakers")
 end
 
-process_event "http://lanyrd.com/2011/euruko"
+process_event "http://lanyrd.com/2012/scotrubyconf"
